@@ -49,7 +49,7 @@ function fruitProcessor(apples, oranges) {
     return juice;
 }
 console.log(fruitProcessor(2, 3));
-// code challenge 1
+// Code Challenge 1
 let dolphinsArr1 = [44, 23, 71];
 let koalasArr1 = [65, 54, 48];
 let dolphinsArr2 = [85, 54, 41];
@@ -96,6 +96,7 @@ console.log(calculateAge(years[2]), calculateAge(years[3]));
 const agesArr = [calculateAge(years[2]), calculateAge(years[3])];
 console.log(agesArr);
 // built-in array methods: push & unshift (return length); pop & shift (return removed element value);)
+// array is a special type of object with built-in properties and methods 
 const l1 = friends.push('Jacob', 'David');
 console.log(friends, l1);
 const l2 = friends.unshift('Bob');
@@ -114,7 +115,7 @@ if (friends.includes('Peter')) {
 } else {
     console.log(`You do not have a friend named Peter.`);
 }
-// code challenge 2
+// Code Challenge 2
 let tip;
 let bill = [125, 555, 44];
 let billPlusTip;
@@ -124,3 +125,119 @@ for (let i = 0; i < 3; i++) {
     billPlusTip = bill[i] + (bill[i] * tip);
     console.log(`The bill was ${bill[i]}, the tip was ${(tip * bill[i])}, and the total value ${billPlusTip}`);
 }
+// Data Structure: Objects (properties are unordered)
+// Object Literal
+const tyObj = {
+    firstName: 'Ty',
+    lastName: 'Richardson',
+    age: 2021 - 1963,
+    job: 'Bookseller',
+    friends: friends
+};
+console.log(tyObj, tyObj.friends, tyObj['friends']);
+const nameKey = 'Name';
+console.log(tyObj['first' + nameKey] + " " + tyObj['last' + nameKey]);
+
+// tyObj.location = "Minneapolis";
+
+// Use brackets when property key must be an expression instead of the literal property key value. If it doesn't exist, undefined is returned.
+// Dot Operator is "Member Access";
+// Brackets Operator is "Calculated Member Access"
+
+/*
+/const interestedIn = prompt('What do you want to know about Ty? Choose between firstName, lastName, age, job, and friends');
+console.log(tyObj[interestedIn]);
+if (tyObj[interestedIn]) {
+    console.log(tyObj[interestedIn]);
+} else {
+    console.log(`tyObj[${interestedIn}] doesn't exist as a property key on the object tyObj.`);
+}
+*/
+// Challenge getting values from tyObj
+console.log(`${tyObj.firstName} has ${tyObj.friends.length} friends, and his best friend is called ${tyObj.friends[0]}.`);
+// Methods on an object (function expressions)
+const objTy= {
+    firstName: 'Ty',
+    lastName: 'Richardson',
+    birthYear: 1963,
+    job: 'bookseller',
+    friends: friends,
+    hasDriversLicense: true,
+
+    /* calcAge: function() {
+         return 2021 - this.birthYear;
+    } */
+    // better to store the result and return it, in case it is an expensive operation
+    calcAge: function() {
+        this.age = 2021 - this.birthYear;
+        return this.age;
+    },
+
+    getSummary: function() {
+        return `${this.firstName} ${this.lastName} is a ${this.calcAge()}-year old ${this.job} who has ${this.hasDriversLicense ? 'a' : 'no'} driver's license.`;
+    }
+};
+console.log(objTy.calcAge());
+console.log(objTy['calcAge']());
+// "this" refers to the object that called the method. In this case, calcAge() was called by objTy. So, this == objTy; Arrow functions don't work this way -- they are not bound by "this" to the object that called them.
+// Challenge: create summary method
+console.log(objTy.getSummary());
+// Code Challenge 3
+const markObj = {
+    firstName: 'Mark',
+    lastName: 'Miller',
+    weight: 78,
+    height: 1.69,
+
+    calcBMI: function() {
+        this.bmi = this.weight / (this.height ** 2);
+        return this.bmi.toFixed(2);
+    }
+}
+const johnObj = {
+    firstName: 'John',
+    lastName: 'Smith',
+    weight: 92,
+    height: 1.95,
+    
+    calcBMI: function() {
+        this.bmi = this.weight / (this.height ** 2);
+        return this.bmi.toFixed(2);
+    }
+}
+if (markObj.calcBMI() > johnObj.calcBMI()) {
+    console.log(`Mark's BMI (${markObj.calcBMI()}) is higher than John's (${johnObj.calcBMI()})`);
+} else {
+    console.log(`John's BMI (${johnObj.calcBMI()}) is higher than Mark's (${markObj.calcBMI()})`);
+}
+// Loops
+// Flow Control that automates repetition; emojis from command + i
+console.log(`Lifting weights rep 1 🏋️`);
+console.log(`Lifting weights rep 2 🏋️`);
+// etc.
+for (let rep = 1; rep < 6; rep++) {
+    console.log(`Lifting weights loop rep ${rep} 🏋️`);
+}
+// Continue skips the rest of the current iteration and starts loop again
+// Break ends the loop and give control to next line of code
+// Code Challenge 4
+let tipsArr = [];
+let bills = [22, 295, 176, 440, 37, 105, 10, 1100, 86, 52];
+let totalsArr = [];
+function calcTip(billsArr) {
+    for (let i = 0; i < bills.length; i++) {
+        tipsArr.push((billsArr[i] > 50 && billsArr[i] < 300) ? .15 : .20);
+        totalsArr.push(billsArr[i] + (billsArr[i] * tipsArr[i]));
+    }
+}
+calcTip(bills);
+console.log(tipsArr, totalsArr);
+function calcAvg(arr) {
+    let sum = 0;
+    for (let i = 0; i < arr.length; i++) {
+        sum += arr[i];
+    }
+    sum /= arr.length;
+    return sum;
+}
+console.log(calcAvg(totalsArr));
