@@ -72,7 +72,6 @@ main {
 .player--active .score {
   font-weight: 400;
 }
-
 .player--active .current {
   opacity: 1;
 }
@@ -164,4 +163,8 @@ main {
 .player--winner .name {
   font-weight: 700;
   color: #c7365f;
+}
+
+.hidden {
+  display: none;
 }
