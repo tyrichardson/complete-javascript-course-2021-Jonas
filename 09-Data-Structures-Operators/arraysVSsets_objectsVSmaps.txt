@@ -1,0 +1,50 @@
+Sources of Data:
+1. From the program (written in the source code)
+2. From the UI (user input or data written in the DOM)
+3. From external source (an API from database, website... and endpoint)
+ 
+A Collection of Data to be stored:
+  Need a Data Structure:
+    - A Simple List? (use Arrays or Sets)
+    - Key/Value pairs? (Objects or Maps)
+
+      Keys describe the values ("the data they contain")
+
+      In web development, most data comes from an API in JSON format
+      
+      A JSON file is an object (of objects) that you assign to a variable when it is received; many of the values are Arrays
+
+Use Arrays when:
+  - data must be ordered
+  - you want duplicates, if they exist
+  - you want to manipulate data
+
+Use Sets when:
+  - order and retrieval are not important
+  - you want zero duplicates
+  - you want to remove duplicates from an array
+  - high-performance is VERY important
+
+Use Objects for :
+  - Ability to write methods
+  - Using "this"
+  - Working with JSON files
+  - Ease of writing them
+  - Ease of recognizing them (familiar, traditional form)
+  - Ease of retrieval using dot (.) and ['keyName'] (bracket) notation
+
+Use Maps for:
+ - Simply storing key/value pairs
+ - Keys that are not strings
+ - Need better performance
+ - Ease of iteration
+ - Ease of computing the size
+
+
+
+
+
+
+
+  
+
