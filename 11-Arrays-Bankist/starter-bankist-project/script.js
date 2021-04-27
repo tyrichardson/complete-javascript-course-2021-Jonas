@@ -1,4 +1,12 @@
 'use strict';
+/*
+==>> .insertAdjacentHTML(position, template string)
+  https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
+
+==>> .innerHTML (returns string of HTML inside element)
+
+
+*/
 
 /////////////////////////////////////////////////
 // BANKIST APP for working with arrays
@@ -60,12 +68,160 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = '';
+  movements.forEach(function (mov, i) {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
+    const html = `
+      <div class="movements__row">
+        <div class="movements__type movements__type--${type}">
+        ${i + 1} ${type}
+        </div>
+        <div class="movements__value">${mov}€</div>
+      </div>
+    `;
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+};
 
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
+const calcDisplayBalance = function (account) {
+  account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${account.balance}€`;
+};
+
+const calcDisplaySummary = function (account) {
+  const incomes = account.movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes}€`;
+  const out = account.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out)}€`;
+  const interest = account.movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * account.interestRate) / 100)
+    .filter(int => int >= 1)
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+
+const createUsernames = function (accts) {
+  // creating side effects with forEach(), add username property to object
+  accts.forEach(function (acct) {
+    acct.username = acct.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+
+createUsernames(accounts);
+
+// const account = accounts.find(acc => acc.owner === 'Jessica Davis');
+
+const updateUI = function (curAcc) {
+  // Display movements
+  displayMovements(curAcc.movements);
+  // Display balance
+  calcDisplayBalance(curAcc);
+  // Display summary
+  calcDisplaySummary(curAcc);
+};
+
+// LOGIN Event handler -- add data on DOM is now dynamically generated
+let currentAccount;
+
+// when cursor is in an input and ENTER is pressed, "submit button is clicked"
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault(); // by default, a submit button in a form reloads the page
+  // find() exact element desired
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+
+  // use Optional Chaining (?) to avoid error if currentAccount does not exist
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI & message
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+    containerApp.style.opacity = 100;
+
+    // Clear input fields
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur(); // take focus off of pin field because of blinking cursor
+
+    // Update UI
+    updateUI(currentAccount);
+  }
+});
+
+// TRANSFER MONEY Event handler
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+  inputTransferAmount.value = inputTransferTo.value = '';
+
+  if (
+    amount > 0 &&
+    receiverAccount &&
+    currentAccount.balance >= amount &&
+    receiverAccount?.username !== currentAccount.username
+  ) {
+    currentAccount.movements.push(-amount);
+    receiverAccount.movements.push(amount);
+  }
+  // Update UI
+  updateUI(currentAccount);
+});
+
+// REQUEST LOAN Event handler
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    // movement of requested loan amount
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+    inputLoanAmount.value = '';
+  }
+});
+
+// CLOSE ACCOUNT Event handler
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    inputCloseUsername.value = inputClosePin.value = '';
+    // Delete account and hide the UI
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+  }
+  console.log(accounts);
+});
+
+/* Examples for handling nested arrays
+// example of using flat(), the bank wants to know the balance of all the movements in all the accounts
+const totalAccountMovements = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+console.log('totalAccountMovements ', totalAccountMovements);
+
+// example of the above using flatMap() -- which can only go one level deep!
+const totalAcctMovements = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+console.log('totalAcctMovements flatMap ', totalAcctMovements);
+*/
