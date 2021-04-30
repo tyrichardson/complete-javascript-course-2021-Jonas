@@ -68,9 +68,10 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = '';
-  movements.forEach(function (mov, i) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
       <div class="movements__row">
@@ -211,7 +212,18 @@ btnClose.addEventListener('click', function (e) {
   console.log(accounts);
 });
 
-/* Examples for handling nested arrays
+let sorted = false;
+
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
+
+// NOT NEEDED FOR PROJECT FUNCTIONALITY, JUST EXAMPLES USING THE PROJECT
+
+// FLAT AND FLATMAP
+// Examples for handling nested arrays
 // example of using flat(), the bank wants to know the balance of all the movements in all the accounts
 const totalAccountMovements = accounts
   .map(acc => acc.movements)
@@ -224,4 +236,19 @@ const totalAcctMovements = accounts
   .flatMap(acc => acc.movements)
   .reduce((acc, mov) => acc + mov, 0);
 console.log('totalAcctMovements flatMap ', totalAcctMovements);
-*/
+
+// ARRAY.FROM()
+// Example of using Array.from() to create an array from a node list returned by document.querySelectorAll(), so that you can used array methods on the items in that list
+// Pretend the movements values are not in an array, that they are just values in the UI
+// events can be called on any element
+labelBalance.addEventListener('click', function () {
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value'),
+    el => Number(el.textContent.replace('€', ''))
+  );
+  console.log(movementsUI); // [1300, 70, -130, -650, 3000, -400, 450, 200]
+
+  const movementsUI2 = [...document.querySelectorAll('.movements__value')];
+  console.log(movementsUI2); // need to access the textContent of each element
+  // then you can run map() against movementsUI2, but the above is preferred.
+});

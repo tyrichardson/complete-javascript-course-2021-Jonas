@@ -83,3 +83,114 @@ const calcAverageHumanAge = (ages) =>
 let avg1 = calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
 let avg2 = calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
 console.log(avg1, avg2);
+
+// Challenge 4
+const dogs = [
+  { weight: 22, curFood: 250, owners: ["Alice", "Bob"] },
+  { weight: 8, curFood: 200, owners: ["Matilda"] },
+  { weight: 13, curFood: 275, owners: ["Sarah", "John"] },
+  { weight: 32, curFood: 340, owners: ["Michael"] },
+];
+
+console.log("original dogs ", dogs);
+
+// Being within a range 10% above and below the recommended portion means:
+// current > (recommended * 0.90) && current < (recommended * 1.10)
+// the current portion should be between 90 % and 110 % of the recommended portion
+
+dogs.forEach((el) => {
+  el.recommendedFood = Math.trunc(el.weight ** 0.75 * 28);
+});
+
+console.log("forEach dogs recommendedFood", dogs);
+
+/*
+let sarahDog = dogs.findIndex((el) => el.owners.includes("Sarah"));
+console.log("sarahDog ", sarahDog);
+
+if (dogs[sarahDog].curFood < dogs[sarahDog].recommendedFood * 0.9) {
+  console.log(`Sarah's dog is eating too little.`);
+} else if (dogs[sarahDog].curFood > dogs[sarahDog].recommendedFood * 1.1) {
+  console.log(`Sarah's dog is eating too much.`);
+} else {
+  console.log(`Sarah's dog is eating a healthy amount of food.`);
+}
+*/
+// OR
+const sarahDog = dogs.find((dog) => dog.owners.includes("Sarah"));
+console.log("sarahDog ", sarahDog);
+console.log(
+  `Sarah's dog is eating too ${
+    sarahDog.curFood > sarahDog.recommendedFood * 1.1 ? "much" : "little"
+  }` // not really the proper formula for discovering if curFood is in range
+);
+
+const ownersEatTooMuch = dogs
+  .filter((el) => el.curFood > el.recommendedFood)
+  .flatMap((el) => el.owners);
+
+const ownersEatTooLittle = dogs
+  .filter((el) => el.curFood < el.recommendedFood)
+  .flatMap((el) => el.owners);
+
+console.log("ownersEatTooMuch ", ownersEatTooMuch);
+console.log("ownersEatTooLittle ", ownersEatTooLittle);
+
+/*
+let namesM = "";
+let namesL = "";
+let m = [];
+let l = [];
+
+ownersEatTooMuch.forEach((el) => {
+  namesM += `${el} `;
+  let arr = namesM.split(" ");
+  arr.splice(-1);
+  m = arr.join(" and ");
+});
+console.log(`${m}'s dogs eat too much!`);
+
+ownersEatTooLittle.forEach((el) => {
+  namesL += `${el} `;
+  let arr = namesL.split(" ");
+  arr.splice(-1);
+  l = arr.join(" and ");
+});
+console.log(`${l}'s dogs eat too little!`);
+*/
+// OR
+console.log(`${ownersEatTooMuch.join(" and ")}'s dogs eat too much!`);
+console.log(`${ownersEatTooLittle.join(" and ")}'s dogs eat too little!`);
+
+console.log(
+  `There is a dog eating exactly the right amount of food: ${dogs.some(
+    (el) => el.curFood === el.recommendedFood
+  )}`
+);
+
+const checkEatingOkay = (el) =>
+  el.curFood > el.recommendedFood * 0.9 &&
+  el.curFood < el.recommendedFood * 1.1;
+
+console.log(
+  `There is a dog eating an okay amount of food: ${dogs.some(checkEatingOkay)}`
+);
+
+const goodDogOwners = dogs.filter(checkEatingOkay);
+
+console.log("goodDogOwners ", goodDogOwners);
+
+let shallowArr = dogs
+  .slice()
+  .sort((a, b) => a.recommendedFood - b.recommendedFood);
+console.log(shallowArr);
+
+/*
+const ownersEatTooMuch = dogs
+  .filter((el) => el.curFood > el.recommendedFood)
+  .flatMap((el) => el.owners)
+  .reduce((acc, cur) => {
+    acc.push(cur);
+    return acc;
+  }, []);
+  */

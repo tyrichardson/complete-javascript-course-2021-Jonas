@@ -1,5 +1,36 @@
 "use strict";
-// MAP, FILTER, REDUCE, FIND, FINDINDEX, SOME, EVERY, FLAT, FLATMAP
+// MAP, FILTER, REDUCE, FIND, FINDINDEX, SOME, EVERY, FLAT, FLATMAP, SORT, code for declaring and initializing arrays, code for converting into TITLE CASE
+
+// Data
+const account1 = {
+  owner: "Jonas Schmedtmann",
+  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  interestRate: 1.2, // %
+  pin: 1111,
+};
+
+const account2 = {
+  owner: "Jessica Davis",
+  movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+  interestRate: 1.5,
+  pin: 2222,
+};
+
+const account3 = {
+  owner: "Steven Thomas Williams",
+  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  interestRate: 0.7,
+  pin: 3333,
+};
+
+const account4 = {
+  owner: "Sarah Smith",
+  movements: [430, 1000, 700, 50, 90],
+  interestRate: 1,
+  pin: 4444,
+};
+
+const accounts = [account1, account2, account3, account4];
 
 // map, filter, and reduce are used to transform data (DATA TRANSFORMATION METHODS)
 // popular in functional programming paradigm
@@ -19,7 +50,6 @@
 // takes an array, loops over it, reducing the elements into a single returned value (start with an accumulator and use it with each subsequent current element of the array -- a "snowball" effect)
 // can be a pure function (only returns a value), and not produce any side effects (actions in func body)
 
-// THE MAP METHOD -- returns a new array
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 const eurToUSD = 1.1;
 const movementsUSD = movements.map((mov) => mov * eurToUSD);
@@ -27,6 +57,7 @@ console.log("original movements array ", movements);
 console.log("***");
 console.log("movementsUSD ", movementsUSD);
 
+// THE MAP METHOD -- returns a new array
 const movementsDescription = movements.map(
   (mov, i) =>
     `Movement ${i + 1}: You ${mov > 0 ? "deposited" : "withdrew"} ${Math.abs(
@@ -156,3 +187,134 @@ const totalAcctMovements = accounts
   .flatMap((acc) => acc.movements)
   .reduce((acc, mov) => acc + mov, 0);
 console.log("totalAcctMovements flatMap ", totalAcctMovements);
+
+// SORT -- mutates original array
+const owners = ["Jonas", "Ty", "Julie", "Frank", "Lila", "Lenu", "Zachary"];
+console.log(owners.sort());
+console.log(owners);
+// both display: ["Frank", "Jonas", "Julie", "Lenu", "Lila", "Ty", "Zachary"]
+
+// sorts based on strings, so numbers first get converted to strings before they are sorted
+let movementsNum = movements;
+console.log(movementsNum);
+// console.log(movementsNum.sort());
+// displays [-130, -400, -650, 1300, 200, 450, 70]
+// fix by using a compare callback
+// for ASCENDING order:
+// if return < 0, A then B (keep this order)
+// if return > 0, B then A (switch this order)
+movementsNum.sort((a, b) => {
+  if (a > b) return 1;
+  if (a < b) return -1;
+});
+console.log(movementsNum);
+// reverse comparisons for DESCENDING order
+// also works with strings, but NOT for mixed arrays
+
+// more compact (zero keeps current order)
+movementsNum.sort((a, b) => a - b);
+
+// CONSTRUCTOR METHOD
+// new Array()
+const arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const arr2 = new Array(1, 2, 3);
+console.log(arr2);
+const x = new Array(7); // declares an array of length 7 that is EMPTY
+
+// ARRAY.FILL()
+x.fill(1); // mutates array by assigning the value 1 to each index
+console.log(x);
+// fill can take a beginning index and an ending index, exclusive
+x.fill(2, 2, 5);
+console.log(x); // (7) [1, 1, 2, 2, 2, 1, 1]
+// fill can be used on any array
+
+// ARRAY.FROM() -- preferred
+// works like map; takes current value, index
+const y = Array.from({ length: 7 }, () => 1);
+console.log(y); // (7) [1, 1, 1, 1, 1, 1, 1]
+
+// e.g.
+const z = Array.from({ length: 7 }, (_, i) => i + 1);
+console.log(z);
+
+// array.from() introduced to create arrays from iterables like maps and sets; also for Node Lists, like the one returned by document.querySelectorAll()
+
+// AN ITERABLE CAN BE DEFINED AS ANY DATA STRUCTURE WITH THE LENGTH PROPERTY
+
+// ADDITIONAL METHOD PRACTICE/EXAMPLES
+
+// sum of all deposits
+const bankDepositSum = accounts
+  .flatMap((el) => el.movements)
+  .filter((el) => el > 0)
+  .reduce((acc, cur) => acc + cur, 0);
+console.log(bankDepositSum);
+
+// a count of how many deposits more than 1,000?
+const numDeposits1000 = accounts
+  .flatMap((el) => el.movements)
+  .filter((el) => el > 1000).length;
+console.log(numDeposits1000);
+// OR
+// use reduce() accumulator as a counter
+const numOfDeposits1000 = accounts
+  .flatMap((el) => el.movements)
+  .reduce((acc, cur) => (cur > 1000 ? acc + 1 : acc), 0);
+console.log(numOfDeposits1000);
+
+// CANNOT USE ACC++ IN THE ABOVE -- WHY? BECAUSE IT RETURNS THE CURRENT VALUE, THEN INCREMENTS THE VALUE
+// ++ACC would first increment the value, then return that value
+let a = 10;
+console.log(a++);
+console.log(a);
+console.log(++a);
+console.log(a);
+
+// USE REDUCE TO CREATE AN OBJECT
+// return the sums of all the deposits and all the withdrawals
+// our acc must be an object, since we are to return an object
+const sums = accounts
+  .flatMap((el) => el.movements)
+  .reduce(
+    (sums, cur) => {
+      cur > 0 ? (sums.deposits += cur) : (sums.withdrawals += cur);
+      return sums;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+console.log(sums);
+// OR using destructuring and bracket notation
+const { dep, withd } = accounts
+  .flatMap((acc) => acc.movements)
+  .reduce(
+    (sums, cur) => {
+      sums[cur > 0 ? "dep" : "withd"] += cur;
+      return sums;
+    },
+    { dep: 0, withd: 0 }
+  );
+console.log(dep, withd);
+
+// array.reduce() can also return an array
+// array.reduce() can be used in place of many other methods
+
+// Example of converting strings to TITLE CASE
+const convertTitleCase = function (title) {
+  const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
+
+  const exceptions = ["a", "an", "and", "the", "but", "or", "on", "in", "with"];
+
+  const titleCase = title
+    .toLowerCase()
+    .split(" ")
+    .map((word) =>
+      exceptions.includes(word) ? word : word[0].toUpperCase() + word.slice(1)
+    )
+    .join(" ");
+  return capitalize(titleCase);
+};
+
+console.log(convertTitleCase("this is a nice title"));
+console.log(convertTitleCase("this is a LONG title, but not too long"));
+console.log(convertTitleCase("and here is another title with an EXAMPLE"));
