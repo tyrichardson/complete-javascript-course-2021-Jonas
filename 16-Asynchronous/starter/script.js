@@ -781,7 +781,7 @@ __proto__: Array(0)
  Uncaught (in promise) ERROR    127.0.0.1/:1
  */
 
-// Promise.any is from ES2021
+// Promise.any is from ES2021 -- returns first fulfilled Promise; ignores rejected Promises -- so will return one fulfilled or nothing
 Promise.any([
   Promise.resolve('Success'),
   Promise.reject('ERROR'),
